@@ -1,0 +1,26 @@
+# Local media pipeline outputs — do not commit media or extracted archives
+work-extracted/
+r2-ready/
+.DS_Store
+
+# Source archives/media are private and too large for git
+*.zip
+*.rar
+*.7z
+*.tar
+*.tar.gz
+*.tgz
+*.mp4
+*.mkv
+*.avi
+*.mov
+*.m4v
+
+# Node/Coolify local files
+node_modules/
+.env
+npm-debug.log*
+
+# Temporary local credential handoff files
+.r2-upload-env*
+.hermes_upload_all.py
