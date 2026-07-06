@@ -29,6 +29,9 @@ assert.equal(addon.manifest.resources.includes('meta'), true);
 assert.equal(addon.manifest.resources.includes('stream'), true);
 assert.equal(addon.streamUrl(episodes[0].filename), 'https://videos.mzootfb.xyz/el-alquimista-de-acero/season-01/s01e01.mp4');
 assert.equal(addon.streamUrl('/el-alquimista-de-acero/season-01/s01e01.mp4'), 'https://videos.mzootfb.xyz/el-alquimista-de-acero/season-01/s01e01.mp4');
+assert.equal(addon.installUrl(), 'https://media.mzootfb.xyz/manifest.json');
+assert.equal(addon.stremioInstallUrl(), 'stremio://media.mzootfb.xyz/manifest.json');
+assert.match(addon.landingPage(), /Open in Stremio/);
 
 const meta = addon.seriesMeta();
 assert.equal(meta.id, 'fmab-redub');

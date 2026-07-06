@@ -8,6 +8,18 @@ Install URL after deployment:
 https://media.mzootfb.xyz/manifest.json
 ```
 
+There is also a tiny landing page at:
+
+```text
+https://media.mzootfb.xyz/
+```
+
+It includes an **Open in Stremio** button using:
+
+```text
+stremio://media.mzootfb.xyz/manifest.json
+```
+
 This app does **not** host or upload videos. It only exposes Stremio addon endpoints and returns stream URLs pointing at the R2-backed video domain.
 
 ## Endpoints
@@ -83,6 +95,12 @@ After deploy, install in Stremio using:
 
 ```text
 https://media.mzootfb.xyz/manifest.json
+```
+
+Or open the landing page and click **Open in Stremio**:
+
+```text
+https://media.mzootfb.xyz/
 ```
 
 ## Notes

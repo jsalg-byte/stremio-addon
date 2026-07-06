@@ -152,6 +152,59 @@ function sendText(res, statusCode, body) {
   res.end(body);
 }
 
+function sendHtml(res, statusCode, body) {
+  res.writeHead(statusCode, {
+    'access-control-allow-origin': '*',
+    'content-type': 'text/html; charset=utf-8',
+  });
+  res.end(body);
+}
+
+function installUrl() {
+  return `${ADDON_PUBLIC_URL}/manifest.json`;
+}
+
+function stremioInstallUrl() {
+  return `stremio://${installUrl().replace(/^https?:\/\//, '')}`;
+}
+
+function landingPage() {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FMAB Redub Stremio Addon</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #08090c; color: #f4f4f5; }
+    main { width: min(680px, calc(100% - 32px)); padding: 40px; border: 1px solid #27272a; border-radius: 24px; background: linear-gradient(145deg, #111116, #0b0c10); box-shadow: 0 24px 80px rgba(0,0,0,.45); }
+    h1 { margin: 0 0 12px; font-size: clamp(32px, 6vw, 54px); line-height: 1; }
+    p { color: #c9c9d1; line-height: 1.6; }
+    a.button { display: inline-block; margin: 18px 0; padding: 14px 18px; border-radius: 999px; color: #08090c; background: #f4f4f5; font-weight: 800; text-decoration: none; }
+    code { display: block; overflow-x: auto; padding: 14px; border-radius: 12px; background: #050506; color: #d4d4d8; }
+    .links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+    .links a { color: #a5b4fc; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>FMAB Redub</h1>
+    <p>Minimal private Stremio addon. Install it in Stremio, then open the FMAB Redub catalog entry.</p>
+    <a class="button" href="${stremioInstallUrl()}">Open in Stremio</a>
+    <p>If the button does not open Stremio, copy this manifest URL into Stremio's addon search/install field:</p>
+    <code>${installUrl()}</code>
+    <div class="links">
+      <a href="/manifest.json">manifest.json</a>
+      <a href="/catalog/series/${CATALOG_ID}.json">catalog</a>
+      <a href="/meta/series/${SERIES_ID}.json">metadata</a>
+      <a href="/stream/series/${SERIES_ID}:s01e01.json">episode 1 stream</a>
+    </div>
+  </main>
+</body>
+</html>`;
+}
+
 async function handleRequest(req, res) {
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
@@ -173,7 +226,7 @@ async function handleRequest(req, res) {
 
   try {
     if (pathname === '/' || pathname === '') {
-      sendText(res, 200, `FMAB Redub Stremio addon\nInstall: ${ADDON_PUBLIC_URL}/manifest.json\n`);
+      sendHtml(res, 200, landingPage());
       return;
     }
 
@@ -205,7 +258,7 @@ function start() {
   const server = http.createServer(handleRequest);
   server.listen(PORT, HOST, () => {
     console.log(`FMAB Redub Stremio addon listening on ${HOST}:${PORT}`);
-    console.log(`Install URL: ${ADDON_PUBLIC_URL}/manifest.json`);
+    console.log(`Install URL: ${installUrl()}`);
   });
   return server;
 }
@@ -226,5 +279,8 @@ module.exports = {
   seriesMeta,
   start,
   streamUrl,
+  installUrl,
+  stremioInstallUrl,
+  landingPage,
   handleRequest,
 };
