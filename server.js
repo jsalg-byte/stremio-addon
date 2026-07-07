@@ -62,6 +62,11 @@ function streamUrl(filename) {
   return `${MEDIA_BASE_URL}/${String(filename).replace(/^\/+/, '')}`;
 }
 
+function isoDate(value) {
+  if (!value) return undefined;
+  return String(value).includes('T') ? String(value) : `${value}T00:00:00.000Z`;
+}
+
 const series = loadSeries();
 const episodes = loadEpisodes();
 const episodeById = new Map(episodes.map((episode) => [episode.id, episode]));
@@ -91,8 +96,7 @@ const catalogMeta = {
   description: series.description,
   poster: series.poster,
   background: series.background,
-  logo: series.logo,
-  posterShape: 'regular',
+  posterShape: 'poster',
   genres: series.genres,
   releaseInfo: series.releaseInfo,
   runtime: series.runtime,
@@ -106,10 +110,9 @@ function seriesMeta() {
       id: episode.id || episodeId(episode.season, episode.episode),
       title: episode.title,
       overview: episode.overview,
-      thumbnail: episode.thumbnail,
       season: episode.season,
       episode: episode.episode,
-      released: episode.released || undefined,
+      released: isoDate(episode.released),
     })),
   };
 }

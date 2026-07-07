@@ -49,11 +49,13 @@ assert.equal(meta.description, series.description);
 assert.equal(meta.poster, series.poster);
 assert.equal(meta.background, series.background);
 assert.deepEqual(meta.genres, series.genres);
+assert.equal(meta.posterShape, 'poster');
 assert.equal(meta.videos.length, 64);
 assert.equal(meta.videos[0].id, 'fmab-redub:s01e01');
 assert.equal(meta.videos[0].title, 'El Alquimista de Acero');
 assert.match(meta.videos[0].overview, /Edward/);
-assert.match(meta.videos[0].thumbnail, /^https:\/\//);
+assert.equal(meta.videos[0].thumbnail, undefined);
+assert.equal(meta.videos[0].released, '2009-04-05T00:00:00.000Z');
 assert.equal(meta.videos[63].id, 'fmab-redub:s01e64');
 
 console.log('Validation passed: episodes.json, manifest shape, metadata, and stream URL generation are valid.');
