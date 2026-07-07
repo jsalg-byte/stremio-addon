@@ -4,7 +4,7 @@
   "name": "Fullmetal Alchemist: Brotherhood (Redoblaje ES)",
   "originalName": "Fullmetal Alchemist: Brotherhood",
   "description": "Los hermanos Edward y Alphonse Elric rompen el mayor tabú de la alquimia al intentar recuperar a su madre mediante una transmutación humana. Tras pagar un precio devastador, emprenden una búsqueda de la Piedra Filosofal para recuperar sus cuerpos, mientras descubren una conspiración que amenaza a todo Amestris.",
-  "poster": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx5114-nSWCgQlmOMtj.jpg",
+  "poster": "/assets/cover.jpg",
   "background": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/5114-q0V5URebphSG.jpg",
   "logo": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx5114-nSWCgQlmOMtj.jpg",
   "genres": [
@@ -23,6 +23,8 @@
   "sourceUrls": {
     "anilist": "https://anilist.co/anime/5114",
     "tvmaze": "https://www.tvmaze.com/shows/2071/fullmetal-alchemist-brotherhood",
-    "spanishWikipedia": "https://es.wikipedia.org/wiki/Anexo:Episodios_de_Fullmetal_Alchemist:_Brotherhood"
+    "spanishWikipedia": "https://es.wikipedia.org/wiki/Anexo:Episodios_de_Fullmetal_Alchemist:_Brotherhood",
+    "episodeThumbnails": "https://kissthemgoodbye.net/tvshows/index.php?cat=397",
+    "localCover": "provided by user"
   }
 }

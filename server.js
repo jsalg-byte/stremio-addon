@@ -13,6 +13,14 @@ const SERIES_ID = 'fmab-redub';
 const CATALOG_ID = 'fmab-redub-catalog';
 const SERIES_PATH = path.join(__dirname, 'series.json');
 const EPISODES_PATH = path.join(__dirname, 'episodes.json');
+const PUBLIC_DIR = path.join(__dirname, 'public');
+
+const MIME_TYPES = {
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png': 'image/png',
+  '.webp': 'image/webp',
+};
 
 function trimTrailingSlash(value) {
   return String(value).replace(/\/+$/, '');
@@ -62,6 +70,13 @@ function streamUrl(filename) {
   return `${MEDIA_BASE_URL}/${String(filename).replace(/^\/+/, '')}`;
 }
 
+function publicUrl(value) {
+  if (!value) return undefined;
+  const url = String(value);
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${ADDON_PUBLIC_URL}/${url.replace(/^\/+/, '')}`;
+}
+
 function isoDate(value) {
   if (!value) return undefined;
   return String(value).includes('T') ? String(value) : `${value}T00:00:00.000Z`;
@@ -76,7 +91,7 @@ const manifest = {
   version: '1.0.0',
   name: 'FMAB Redub',
   description: 'Private Stremio addon for the FMAB redub project.',
-  logo: `${ADDON_PUBLIC_URL}/logo.png`,
+  logo: publicUrl(series.poster),
   resources: ['catalog', 'meta', 'stream'],
   types: ['series'],
   idPrefixes: [SERIES_ID],
@@ -94,8 +109,8 @@ const catalogMeta = {
   type: series.type,
   name: series.name,
   description: series.description,
-  poster: series.poster,
-  background: series.background,
+  poster: publicUrl(series.poster),
+  background: publicUrl(series.background),
   posterShape: 'poster',
   genres: series.genres,
   releaseInfo: series.releaseInfo,
@@ -110,6 +125,7 @@ function seriesMeta() {
       id: episode.id || episodeId(episode.season, episode.episode),
       title: episode.title,
       overview: episode.overview,
+      thumbnail: publicUrl(episode.thumbnail),
       season: episode.season,
       episode: episode.episode,
       released: isoDate(episode.released),
@@ -184,6 +200,26 @@ function sendHtml(res, statusCode, body) {
     'content-type': 'text/html; charset=utf-8',
   });
   res.end(body);
+}
+
+function sendAsset(res, filePath, isHead = false) {
+  const ext = path.extname(filePath).toLowerCase();
+  const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+  const stat = fs.statSync(filePath);
+
+  res.writeHead(200, {
+    'access-control-allow-origin': '*',
+    'cache-control': 'public, max-age=31536000, immutable',
+    'content-length': stat.size,
+    'content-type': contentType,
+  });
+
+  if (isHead) {
+    res.end();
+    return;
+  }
+
+  fs.createReadStream(filePath).pipe(res);
 }
 
 function installUrl() {
@@ -266,6 +302,20 @@ async function handleRequest(req, res) {
       return;
     }
 
+    if (pathname.startsWith('/assets/')) {
+      const relativePath = pathname.replace(/^\/assets\//, '');
+      const assetsRoot = path.join(PUBLIC_DIR, 'assets');
+      const filePath = path.resolve(assetsRoot, relativePath);
+
+      if (!filePath.startsWith(assetsRoot + path.sep) || !fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+        sendJson(res, 404, { error: 'Not found' });
+        return;
+      }
+
+      sendAsset(res, filePath, req.method === 'HEAD');
+      return;
+    }
+
     const match = pathname.match(/^\/(catalog|meta|stream)\/([^/]+)\/([^/]+)\.json$/);
     if (!match) {
       sendJson(res, 404, { error: 'Not found' });
@@ -306,6 +356,7 @@ module.exports = {
   seriesMeta,
   start,
   streamUrl,
+  publicUrl,
   installUrl,
   stremioInstallUrl,
   landingPage,
