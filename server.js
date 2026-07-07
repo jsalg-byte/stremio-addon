@@ -11,7 +11,7 @@ const ADDON_PUBLIC_URL = trimTrailingSlash(process.env.ADDON_PUBLIC_URL || 'http
 const ADDON_ID = 'xyz.mzootfb.fmab-redub';
 const SERIES_ID = 'fmab-redub';
 const CATALOG_ID = 'fmab-redub-catalog';
-const SERIES_NAME = 'El Alquimista de Acero';
+const SERIES_PATH = path.join(__dirname, 'series.json');
 const EPISODES_PATH = path.join(__dirname, 'episodes.json');
 
 function trimTrailingSlash(value) {
@@ -41,6 +41,19 @@ function loadEpisodes() {
   }).sort((a, b) => a.season - b.season || a.episode - b.episode);
 }
 
+function loadSeries() {
+  const raw = fs.readFileSync(SERIES_PATH, 'utf8');
+  const series = JSON.parse(raw);
+
+  for (const field of ['id', 'type', 'name', 'description', 'poster', 'background']) {
+    if (!series[field]) {
+      throw new Error(`series.json is missing required field "${field}"`);
+    }
+  }
+
+  return series;
+}
+
 function episodeId(season, episode) {
   return `${SERIES_ID}:s${String(season).padStart(2, '0')}e${String(episode).padStart(2, '0')}`;
 }
@@ -49,6 +62,7 @@ function streamUrl(filename) {
   return `${MEDIA_BASE_URL}/${String(filename).replace(/^\/+/, '')}`;
 }
 
+const series = loadSeries();
 const episodes = loadEpisodes();
 const episodeById = new Map(episodes.map((episode) => [episode.id, episode]));
 
@@ -71,11 +85,18 @@ const manifest = {
 };
 
 const catalogMeta = {
-  id: SERIES_ID,
-  type: 'series',
-  name: SERIES_NAME,
-  description: 'FMAB redub video collection.',
+  id: series.id,
+  type: series.type,
+  name: series.name,
+  description: series.description,
+  poster: series.poster,
+  background: series.background,
+  logo: series.logo,
   posterShape: 'regular',
+  genres: series.genres,
+  releaseInfo: series.releaseInfo,
+  runtime: series.runtime,
+  imdbRating: series.imdbRating,
 };
 
 function seriesMeta() {
@@ -84,6 +105,8 @@ function seriesMeta() {
     videos: episodes.map((episode) => ({
       id: episode.id || episodeId(episode.season, episode.episode),
       title: episode.title,
+      overview: episode.overview,
+      thumbnail: episode.thumbnail,
       season: episode.season,
       episode: episode.episode,
       released: episode.released || undefined,
@@ -122,7 +145,7 @@ builder.defineStreamHandler(({ type, id }) => {
   return Promise.resolve({
     streams: [
       {
-        title: `${SERIES_NAME} - ${episode.title}`,
+        title: `${series.name} - ${episode.title}`,
         url: streamUrl(episode.filename),
         behaviorHints: {
           notWebReady: false,
@@ -275,6 +298,7 @@ module.exports = {
   addonInterface,
   episodeById,
   episodes,
+  series,
   manifest,
   seriesMeta,
   start,

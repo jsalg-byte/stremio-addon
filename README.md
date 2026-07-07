@@ -106,6 +106,8 @@ https://media.mzootfb.xyz/
 ## Notes
 
 - `episodes.json` is the source of episode IDs and R2 object paths.
+- `series.json` is the source of series-level metadata, poster, background, genres, runtime, and source links.
 - Stremio IDs use the stable addon slug `fmab-redub`; video filenames point to the uploaded R2 prefix `el-alquimista-de-acero/season-01/`.
+- Episode titles/summaries are Spanish metadata gathered from Spanish Wikipedia; episode stills are referenced from TVMaze; series artwork is referenced from AniList.
 - For v1 there is one Stremio series entry: `fmab-redub`.
 - No auth, DB, admin UI, or upload flow is included.
